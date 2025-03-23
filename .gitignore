@@ -1,3 +1,5 @@
 frontend/.env
 api/.env
 /api/src/app/completion/node_modules
+.env
+env.json

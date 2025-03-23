@@ -1,0 +1,208 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Globals:
+  Api:
+    Cors:
+      AllowMethods: "'GET,POST,OPTIONS'"
+      AllowHeaders: "'Authorization,content-type'"
+      AllowOrigin: "'*'"
+      AllowCredentials: "'true'"
+  Function:
+    Environment:
+      Variables:
+        OPENAI_API_KEY: '{{resolve:secretsmanager:openaiapikey:SecretString:ApiKey}}'
+        SUPABASE_URL: '{{resolve:secretsmanager:supabaseurl:SecretString:SecretUrl}}'
+        SUPABASE_ANON_KEY: '{{resolve:secretsmanager:supabaseanonkey:SecretString:ApiKey}}'
+        GOOGLE_CLIENT_ID: '{{resolve:secretsmanager:googleclientid:SecretString:ApiKey}}'
+        GOOGLE_CAPTCHA_SECRET: '{{resolve:secretsmanager:googlecaptchasecret:SecretString:ApiKey}}'
+        TOKEN_SEED: '{{resolve:secretsmanager:token:SecretString:ApiKey}}'
+        SOCKET_ADDRESS: '{{resolve:ssm:/shyguy/socket-address}}'
+        FIREBASE_KEY: '{{resolve:secretsmanager:firebase:SecretString:ApiKey}}'
+        ELEVENLABS_KEY: '{{resolve:secretsmanager:elevenlabs:SecretString:ApiKey}}'
+        EMBEDDING_ADDRESS: '{{resolve:ssm:/shyguy/embedding-address}}'
+        EMBEDDING_BEARER_TOKEN: '{{resolve:secretsmanager:embedding:SecretString:ApiKey}}'
+        BUCKET_NAME: digital-me-bucket
+        PUBLIC_BUCKET_NAME: public-translation-files
+    Timeout: 120
+    MemorySize: 256
+    Runtime: nodejs18.x
+    Layers:
+      - arn:aws:lambda:us-east-2:010928186902:layer:aws-sdk-layer:1
+
+Resources:
+  MyS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: digital-me-bucket
+  PublicS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: public-translation-files
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: false
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: false
+
+  # S3 Bucket Policy to allow public access to the 'public/' folder
+  PublicS3BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref PublicS3Bucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          # Allow public access to the public folder
+          - Effect: Allow
+            Principal: "*"
+            Action:
+              - s3:GetObject
+            Resource:
+              - "arn:aws:s3:::public-translation-files/public/*"
+
+  # IAM Role for Lambda to interact with this S3 bucket (optional)
+  # Add S3 permissions to the IAM Role
+  PublicS3BucketLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: LambdaS3Policy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:GetObject
+                  - s3:ListBucket
+                Resource:
+                  - "arn:aws:s3:::public-translation-files"
+                  - "arn:aws:s3:::public-translation-files/*"
+
+
+  ExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: LambdaCloudWatchPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: "arn:aws:logs:*:*:*"
+
+        - PolicyName: LambdaS3Policy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:GetObject
+                  - s3:ListBucket
+                Resource:
+                  - "arn:aws:s3:::digital-me-bucket"
+                  - "arn:aws:s3:::digital-me-bucket/*"
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:GetObject
+                  - s3:ListBucket
+                Resource:
+                  - "arn:aws:s3:::public-translation-files"
+                  - "arn:aws:s3:::public-translation-files/*"
+
+        - PolicyName: LambdaGeneralPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:PutItem
+                  - dynamodb:GetItem
+                  - dynamodb:DeleteItem
+                  - lambda:InvokeFunction
+                  - execute-api:ManageConnections
+                  - execute-api:Invoke
+                Resource: '*'
+
+        - PolicyName: LambdaVPCPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ec2:CreateNetworkInterface
+                  - ec2:DescribeNetworkInterfaces
+                  - ec2:DeleteNetworkInterface
+                Resource: '*'
+
+        - PolicyName: LambdaSESPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ses:SendEmail
+                  - ses:SendRawEmail
+                Resource:
+                  - "arn:aws:ses:us-east-1:010928186902:identity/*"
+
+  PostCompletion:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: api/src/app/completion
+      Handler: app.lambdaHandler
+      Runtime: nodejs18.x
+      Timeout: 120
+      MemorySize: 256
+      Role: !GetAtt ExecutionRole.Arn
+      Environment:
+        Variables:
+          POWERTOOLS_SERVICE_NAME: PostCompletion
+          DEBUG_MODE: false
+      Events:
+        PostCompletion:
+          Type: Api
+          Properties:
+            Path: /completion
+            Method: post
+
+  Test:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: api/src/app/completion
+      Handler: app.lambdaHandler
+      Runtime: nodejs18.x
+      Timeout: 120
+      MemorySize: 256
+      Role: !GetAtt ExecutionRole.Arn
+      Environment:
+        Variables:
+          POWERTOOLS_SERVICE_NAME: Test
+          DEBUG_MODE: false
+      Events:
+        Test:
+          Type: Api
+          Properties:
+            Path: /test
+            Method: get
