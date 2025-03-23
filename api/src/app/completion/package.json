@@ -1,0 +1,10 @@
+{
+  "name": "completion",
+  "version": "1.0.0",
+  "scripts": {
+  },
+  "devDependencies": {
+    "cross-env": "7.0.3",
+    "ts-node": "10.9.2"
+  }
+}
