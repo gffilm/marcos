@@ -3,3 +3,7 @@ api/.env
 /api/src/app/completion/node_modules
 .env
 env.json
+/api/node_modules
+/frontend/node_modules
+/node_modules
+*.js

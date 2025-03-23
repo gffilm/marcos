@@ -1,10 +1,11 @@
 
 # FRONT
-goto frontend
+cd frontend
 npm install
-nbm run start
+npm run start
 
 
 # BACKEND
 npm install
+npm run build:api
 sam local start-api --env-vars env.json
