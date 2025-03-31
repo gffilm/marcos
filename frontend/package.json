@@ -14,7 +14,8 @@
     "xlsx": "^0.18.5"
   },
   "scripts": {
-    "start": "vite"
+    "start": "vite",
+    "build": "vite build"
   },
   "devDependencies": {
     "vite": "^5.0.0"

@@ -7,3 +7,4 @@ env.json
 /frontend/node_modules
 /node_modules
 *.js
+frontend/dist/index.html
