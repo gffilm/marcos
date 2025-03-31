@@ -16,6 +16,5 @@
     "types": ["node", "jest"],
     "resolveJsonModule": true
   },
-  "include": ["**/*.spec.ts", "**/*.test.ts"],  // Include only test files
-  "exclude": ["node_modules", "dist", "**/tests/**/*", "./jest.config.ts"]  // Exclude unnecessary directories and files
+  "exclude": ["**/tests/**/*", "./jest.config.ts"]
 }

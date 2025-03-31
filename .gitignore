@@ -6,7 +6,8 @@ env.json
 /api/node_modules
 /frontend/node_modules
 /node_modules
-*.js
+/[0-9]*.js
 frontend/dist/index.html
 /.aws-sam
 .aws-sam/build/template.yaml
+/frontend/dist
