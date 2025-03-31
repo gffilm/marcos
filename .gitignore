@@ -8,3 +8,5 @@ env.json
 /node_modules
 *.js
 frontend/dist/index.html
+/.aws-sam
+.aws-sam/build/template.yaml

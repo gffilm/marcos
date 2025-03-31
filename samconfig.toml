@@ -6,3 +6,4 @@ s3_prefix = "marcos-translator"
 region = "us-east-2"
 capabilities = "CAPABILITY_IAM"
 image_repositories = []
+profile = "account1"
