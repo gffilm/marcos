@@ -11,3 +11,13 @@ frontend/dist/index.html
 /.aws-sam
 .aws-sam/build/template.yaml
 /frontend/dist
+api/dist/app/test/app.js
+api/dist/app/completion/service.js
+api/dist/app/completion/app.js
+api/dist/lib/helpers/openai.js
+api/src/app/completion/app.js
+api/src/app/completion/service.js
+api/src/lib/helpers/lambda.js
+api/src/lib/helpers/openai.js
+api/src/app/test/app.js
+api/dist/lib/helpers/lambda.js
