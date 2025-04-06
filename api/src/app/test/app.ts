@@ -4,7 +4,7 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 export const lambdaHandler = async (event: APIGatewayEvent, context: Context): Promise<APIGatewayProxyResult> => {
-  console.log('process.env', process.env)
+  console.log('TEST process.env', process.env)
   try {
     if (!event.body) {
       return setError('No body provided')
