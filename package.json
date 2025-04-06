@@ -15,7 +15,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "aws-sdk": "^2.1692.0",
+    "@aws-sdk/client-s3": "^3.782.0",
     "axios": "^1.7.2",
     "bcryptjs": "^2.4.3",
     "concurrently": "^8.2.2",
@@ -25,7 +25,6 @@
     "openai": "^4.91.1"
   },
   "devDependencies": {
-    "@types/aws-sdk": "^2.7.4",
     "@types/axios": "^0.14.0",
     "@types/dotenv": "^8.2.0",
     "@types/form-data": "^2.5.0",

@@ -13,7 +13,7 @@
     "forceConsistentCasingInFileNames": true,
     "useUnknownInCatchVariables": false,
     "allowSyntheticDefaultImports": true,
-    "types": ["node", "jest"],
+    "types": ["node"],
     "resolveJsonModule": true
   },
   "include": ["**/*.spec.ts", "**/*.test.ts"],  // Include only test files

@@ -4,11 +4,10 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 export const lambdaHandler = async (event: APIGatewayEvent, context: Context): Promise<APIGatewayProxyResult> => {
-  console.log('TEST process.env v1', process.env)
   try {
     return corsify({
       statusCode: 200,
-      body: JSON.stringify({ result: true, version: '1.0.2' }),
+      body: JSON.stringify({ result: true, version: '1.0.5' }),
     })
   } catch (error) {
     console.error('Error handling completion request:', error)

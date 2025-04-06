@@ -1,4 +1,4 @@
-import AWS from 'aws-sdk'
+import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3'
 import csv from 'csv-parser'
 import { Readable } from 'stream'
 
@@ -10,18 +10,19 @@ export interface DictionaryTerm {
 
 export const dictionaryTerms: DictionaryTerm[] = []
 
-const s3 = new AWS.S3()
+const s3 = new S3Client({ region: 'us-east-1' }) // Update region as needed
 
 export const loadDictionaryFromS3 = async (
   bucket: string,
   key: string
 ): Promise<void> => {
-  if (dictionaryTerms.length > 0) return 
+  if (dictionaryTerms.length > 0) return
 
-  const data = await s3.getObject({ Bucket: bucket, Key: key }).promise()
+  const command = new GetObjectCommand({ Bucket: bucket, Key: key })
+  const response = await s3.send(command)
 
-  const rows: Buffer[] = []
-  const stream = Readable.from(data.Body as Buffer)
+  const stream = response.Body as Readable
+
   return new Promise((resolve, reject) => {
     stream
       .pipe(csv())
