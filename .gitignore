@@ -25,3 +25,4 @@ api/dist/lib/helpers/lambda.js
 layers/aws-sdk.zip
 /layers/nodejs
 /dist
+*.js

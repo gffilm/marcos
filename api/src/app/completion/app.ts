@@ -36,7 +36,7 @@ export const lambdaHandler = async (event: APIGatewayEvent, context: Context): P
       { role: 'system', content: 'You are a helpful translation assistant.' },
       {
         role: 'user',
-        content: `Please translate the following text from ${srcLangId} to ${tgtLangId}:\n\n"${preprocessed}"`
+        content: `Please translate the following text from ${srcLangId} to ${tgtLangId}:\n\n"${preprocessed}", no commentary, just the translation`
       }
     ]
 
