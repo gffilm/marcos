@@ -16,5 +16,6 @@ sam local start-api --env-vars env.json
 AUTOMATIC FROM GITHUB
 
 # BACKEND:
+npm run build:api
 sam build
 sam deploy --guided --profile account1
