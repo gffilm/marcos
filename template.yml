@@ -1,3 +1,22 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Globals:
+  Api:
+    Cors:
+      AllowMethods: "'GET,POST,OPTIONS'"
+      AllowHeaders: "'Authorization,content-type'"
+      AllowOrigin: "'*'"
+      AllowCredentials: "'true'"
+  Function:
+    Environment:
+      Variables:
+        OPENAI_API_KEY: '{{resolve:secretsmanager:openaiapikey:SecretString:ApiKey}}'
+    Timeout: 120
+    MemorySize: 256
+    Runtime: nodejs18.x
+
+Resources:
   ExecutionRole:
     Type: AWS::IAM::Role
     Properties:
@@ -65,3 +84,43 @@
                   - s3:GetObject
                 Resource:
                   - "arn:aws:s3:::dialects/*"
+
+  PostCompletion:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: api/src/app/completion
+      Handler: app.lambdaHandler
+      Runtime: nodejs18.x
+      Timeout: 120
+      MemorySize: 256
+      Role: !GetAtt ExecutionRole.Arn
+      Environment:
+        Variables:
+          POWERTOOLS_SERVICE_NAME: PostCompletion
+          DEBUG_MODE: false
+      Events:
+        PostCompletion:
+          Type: Api
+          Properties:
+            Path: /completion
+            Method: post
+
+  Test:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: api/src/app/test
+      Handler: app.lambdaHandler
+      Runtime: nodejs18.x
+      Timeout: 120
+      MemorySize: 256
+      Role: !GetAtt ExecutionRole.Arn
+      Environment:
+        Variables:
+          POWERTOOLS_SERVICE_NAME: Test
+          DEBUG_MODE: false
+      Events:
+        Test:
+          Type: Api
+          Properties:
+            Path: /test
+            Method: get
