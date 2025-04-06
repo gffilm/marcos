@@ -1,7 +1,10 @@
 import { APIGatewayEvent, APIGatewayProxyResult, Context } from 'aws-lambda'
 import { corsify, setError } from '../../lib/helpers/lambda'
+import dotenv from 'dotenv'
+dotenv.config()
 
 export const lambdaHandler = async (event: APIGatewayEvent, context: Context): Promise<APIGatewayProxyResult> => {
+  console.log('process.env', process.env)
   try {
     if (!event.body) {
       return setError('No body provided')

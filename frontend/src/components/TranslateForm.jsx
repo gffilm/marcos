@@ -9,11 +9,12 @@ export default function TranslateForm() {
   const [tgtLangId, setTgtLangId] = useState('Spanish')
   const [translated, setTranslated] = useState('')
   const [loading, setLoading] = useState(false)
+  const BASE_URL = import.meta.env.VITE_LAMBDA_ENDPOINT ?? ''
 
   const handleTranslate = async () => {
     setLoading(true)
     try {
-      const res = await axios.post(import.meta.env.VITE_LAMBDA_ENDPOINT, {
+      const res = await axios.post(`${BASE_URL}/completion`, {
         srcText,
         srcLangId,
         tgtLangId
