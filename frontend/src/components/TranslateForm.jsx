@@ -2,12 +2,16 @@ import React, { useState } from 'react'
 import { TextField, Button, Grid, CircularProgress } from '@mui/material'
 import axios from 'axios'
 import LanguageSelect from './LanguageSelect'
+import { highlight } from './util'
 
 export default function TranslateForm() {
   const [srcText, setSrcText] = useState('Hello')
   const [srcLangId, setSrcLangId] = useState('English')
   const [tgtLangId, setTgtLangId] = useState('Spanish')
   const [translated, setTranslated] = useState('')
+  const [preprocessed, setPreprocessed] = useState('')
+  const [matchFound, setMatchFound] = useState(false)
+
   const [loading, setLoading] = useState(false)
   const BASE_URL = import.meta.env.VITE_LAMBDA_ENDPOINT ?? ''
 
@@ -19,7 +23,11 @@ export default function TranslateForm() {
         srcLangId,
         tgtLangId
       })
-      setTranslated(JSON.parse(res.data.translatedText))
+      const { translatedText, preprocessed, matchFound } = res.data
+      setTranslated(translatedText)
+      setPreprocessed(preprocessed)
+      setMatchFound(matchFound)
+
     } catch (err) {
       console.error('Translation failed:', err)
       setTranslated('Translation failed. Please try again.')
@@ -71,6 +79,19 @@ export default function TranslateForm() {
           {loading ? <CircularProgress size={24} color="inherit" /> : 'Translate'}
         </Button>
       </Grid>
+
+      {matchFound && (
+        <Grid item xs={12}>
+          <div style={{ background: '#fff9c4', padding: 12, borderRadius: 6 }}>
+            <strong>Libyan term match found:</strong>
+            <div
+              dangerouslySetInnerHTML={{
+                __html: highlight(preprocessed).replace(/\n/g, '<br />')
+              }}
+            />
+          </div>
+        </Grid>
+      )}
 
       {(translated || loading) && (
         <Grid item xs={12}>

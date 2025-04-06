@@ -34,7 +34,10 @@ export default function UploadExcel() {
     reader.readAsArrayBuffer(acceptedFiles[0])
   }, [])
 
-  const { getRootProps, getInputProps } = useDropzone({ onDrop, accept: ['.xlsx'] })
+  const { getRootProps, getInputProps } = useDropzone({ onDrop, accept: {
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx']
+  }
+ })
 
   return (
     <Box {...getRootProps()} sx={{ p: 3, border: '2px dashed grey', textAlign: 'center' }}>

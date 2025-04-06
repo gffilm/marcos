@@ -1,0 +1,14 @@
+
+
+
+.highlight {
+  background-color: #fff59d;
+  font-weight: bold;
+  padding: 0 4px;
+  border-radius: 4px;
+}
+
+.subinfo {
+  color: #666;
+  font-style: italic;
+}

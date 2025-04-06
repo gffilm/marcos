@@ -3,6 +3,7 @@ import { TextField, MenuItem } from '@mui/material'
 
 const languages = [
   { code: 'en', label: 'English' },
+  { code: 'ar-LY', label: 'Libyan Arabic' },
   { code: 'es', label: 'Spanish' },
   { code: 'fr', label: 'French' },
   { code: 'de', label: 'German' },
@@ -18,7 +19,7 @@ const languages = [
   { code: 'tr', label: 'Turkish' },
   { code: 'nl', label: 'Dutch' },
   { code: 'pl', label: 'Polish' },
-  { code: 'sv', label: 'Swedish' },
+  { code: 'sv', label: 'Swedish' }
 ]
 
 export default function LanguageSelect({ label, value, onChange }) {

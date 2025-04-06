@@ -28,7 +28,9 @@ export const lambdaHandler = async (event: APIGatewayEvent, context: Context): P
       return setError('Missing required translation fields')
     }
 
-    const { preprocessed, matchFound } = highlightTerms(srcText)
+    const { preprocessed, matchFound } =
+      srcLangId === 'Libyan Arabic' ? highlightTerms(srcText) : { preprocessed: srcText, matchFound: false }
+
 
     const messages = [
       { role: 'system', content: 'You are a helpful translation assistant.' },
