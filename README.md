@@ -7,7 +7,7 @@ npm run start
 
 # BACKEND
 npm install
-npm run build:api
+npm run dev:api
 set AWS_PROFILE=account1
 aws sso login  --profile account1 
 sam local start-api --env-vars env.json

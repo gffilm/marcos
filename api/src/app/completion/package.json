@@ -1,10 +1,12 @@
 {
   "name": "completion",
   "version": "1.0.0",
-  "scripts": {
-  },
+  "scripts": {},
   "devDependencies": {
     "cross-env": "7.0.3",
     "ts-node": "10.9.2"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.1692.0"
   }
 }

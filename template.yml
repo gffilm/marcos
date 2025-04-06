@@ -94,6 +94,8 @@ Resources:
           Properties:
             Path: /completion
             Method: post
+      Layers:
+        - !Ref AwsSdkLayer
 
   Test:
     Type: AWS::Serverless::Function
@@ -114,3 +116,15 @@ Resources:
           Properties:
             Path: /test
             Method: get
+
+  AwsSdkLayer:
+    Type: AWS::Lambda::LayerVersion
+    Properties:
+      LayerName: AwsSdkLayer
+      Description: AWS SDK layer for Lambda
+      Content:
+        S3Bucket: marcos-layers-20250406
+        S3Key: aws-sdk.zip
+      CompatibleRuntimes:
+        - nodejs18.x
+      RetentionPolicy: Retain

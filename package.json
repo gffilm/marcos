@@ -5,6 +5,7 @@
   "scripts": {
     "build:web": "cd frontend && npm run build",
     "build:api": "webpack-cli",
+    "dev:api": "set NODE_ENV=local && webpack --mode development --watch",
     "dev:sam": "sam local start-api -p 3001 --host 0.0.0.0 --env-vars env.json",
     "dev:api": "set NODE_ENV=local && webpack --mode development --watch",
     "dev:local-api": "cd local-api && npm run dev",
@@ -15,13 +16,17 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "aws-sdk": "^2.1692.0",
     "axios": "^1.7.2",
     "bcryptjs": "^2.4.3",
     "concurrently": "^8.2.2",
-    "dotenv": "^16.4.5",
-    "form-data": "^4.0.0"
+    "csv-parser": "^3.2.0",
+    "dotenv": "^16.4.7",
+    "form-data": "^4.0.0",
+    "openai": "^4.91.1"
   },
   "devDependencies": {
+    "@types/aws-sdk": "^2.7.4",
     "@types/axios": "^0.14.0",
     "@types/dotenv": "^8.2.0",
     "@types/form-data": "^2.5.0",
