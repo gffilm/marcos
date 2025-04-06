@@ -1,0 +1,8 @@
+{
+  "PostCompletion": {
+    "OPENAI_API_KEY": "sk-..."
+  },
+  "Test": {
+    "OPENAI_API_KEY": "sk-..."
+  }
+}
