@@ -116,6 +116,8 @@ Resources:
           Properties:
             Path: /test
             Method: get
+      Layers:
+        - !Ref AwsSdkLayer
 
   AwsSdkLayer:
     Type: AWS::Lambda::LayerVersion
