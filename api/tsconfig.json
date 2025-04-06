@@ -14,8 +14,8 @@
     "useUnknownInCatchVariables": false,
     "allowSyntheticDefaultImports": true,
     "types": ["node", "jest"],
-    "resolveJsonModule": true,
-    "noEmitOnError": false
+    "resolveJsonModule": true
   },
-  "exclude": ["**/tests/**/*", "./jest.config.ts"]
+  "include": ["**/*.spec.ts", "**/*.test.ts"],  // Include only test files
+  "exclude": ["node_modules", "dist", "**/tests/**/*", "./jest.config.ts"]  // Exclude unnecessary directories and files
 }

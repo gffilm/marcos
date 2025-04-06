@@ -9,13 +9,6 @@ const mode = process.env.NODE_ENV || 'production'
 // Packages/dependencies to be excluded from the webpack compile.
 const externalsDef = [
   'aws-sdk',
-
-  // Possible drivers for knex - we'll ignore them
-  'better-sqlite3',
-  'sqlite3',
-  'mariasql',
-  'mssql',
-  'mysql',
   'oracle',
   'strong-oracle',
   'tedious',
@@ -23,18 +16,6 @@ const externalsDef = [
   'pg',
   'pg-query-stream'
 ]
-
-// Remove 'mysql|awsSdk' from externalsDef if mode is 'development|local'
-if (mode.trim() === 'development' || mode.trim() === 'local') {
-  const pgIndex = externalsDef.indexOf('pg')
-  if (pgIndex !== -1) {
-    externalsDef.splice(pgIndex, 1)
-  }
-  const awsSdkIndex = externalsDef.indexOf('aws-sdk')
-  if (awsSdkIndex !== -1) {
-    externalsDef.splice(awsSdkIndex, 1)
-  }
-}
 
 module.exports = {
   // Loads the entry object from the AWS::Serverless::Function resources in your
@@ -47,25 +28,12 @@ module.exports = {
     libraryTarget: 'commonjs2',
     path: path.resolve('.')
   },
-
-  // Set the webpack mode
-  // Is Local or Production
   mode,
-
-  // Create source maps
   devtool: false,
-
-  // Resolve .ts and .js extensions
   resolve: {
     extensions: ['.ts', '.js']
   },
-
-  // Target node
   target: 'node',
-
-  // AWS recommends always including the aws-sdk in your Lambda package but excluding can significantly reduce
-  // the size of your deployment package. If you want to always include it then comment out this line. It has
-  // been included conditionally because the node10.x docker image used by SAM local doesn't include it.
   externals: externalsDef,
 
   optimization: {
@@ -81,8 +49,6 @@ module.exports = {
       })
     ]
   },
-
-  // Add the TypeScript loader
   module: {
     rules: [{
       test: /\.ts?$/,
@@ -92,14 +58,9 @@ module.exports = {
       }
     }]
   },
-
-  // Add the AWS SAM Webpack plugin
   plugins: [
     awsSamPlugin
   ],
-
-  // Show 100 assets sorted by size.
-  // Disable warnings.
   stats: {
     assetsSort: '!size',
     assetsSpace: 100,
