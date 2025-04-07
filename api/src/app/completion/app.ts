@@ -41,10 +41,10 @@ export const lambdaHandler = async (event: APIGatewayEvent, context: Context): P
     ]
 
     const chatResponse = await openai.chat.completions.create({
-      model: 'gpt-4o',
+      model: 'gpt-4o-2024-08-06',
       messages,
-      temperature: 0.3,
-      max_tokens: 500
+      temperature: 0.9,
+      max_tokens: 1000
     })
 
     const translatedText = chatResponse.choices[0]?.message?.content || 'No translation returned.'
