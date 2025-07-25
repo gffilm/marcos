@@ -1,11 +1,13 @@
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3'
-import csv from 'csv-parser'
 import { Readable } from 'stream'
 
 export interface DictionaryTerm {
   libTerm: string
   engTerm: string
   context: string
+  gender?: string
+  style?: string
+  region?: string
 }
 
 export const dictionaryTerms: DictionaryTerm[] = []
@@ -22,19 +24,39 @@ export const loadDictionaryFromS3 = async (
   const response = await s3.send(command)
 
   const stream = response.Body as Readable
+  const jsonString = await streamToString(stream)
 
-  return new Promise((resolve, reject) => {
-    stream
-      .pipe(csv())
-      .on('data', (row: any) => {
-        const libTerm = row['Libyan Dialect']?.trim()
-        const engTerm = row['English']?.trim()
-        const context = row['Context']?.trim()
+  try {
+    const data = JSON.parse(jsonString)
+    if (Array.isArray(data)) {
+      for (const item of data) {
+        const libTerm = item.libTerm?.trim()
+        const engTerm = item.engTerm?.trim()
+        const context = item.context?.trim()
         if (libTerm && engTerm) {
-          dictionaryTerms.push({ libTerm, engTerm, context })
+          dictionaryTerms.push({
+            libTerm,
+            engTerm,
+            context,
+            gender: item.gender,
+            style: item.style,
+            region: item.region
+          })
         }
-      })
-      .on('end', resolve)
-      .on('error', reject)
-  })
+      }
+    } else {
+      console.error('Expected an array of dictionary terms in the JSON file')
+    }
+  } catch (err) {
+    console.error('Failed to parse JSON from S3:', err)
+    throw err
+  }
 }
+
+const streamToString = (stream: Readable): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const chunks: any[] = []
+    stream.on('data', (chunk) => chunks.push(chunk))
+    stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf-8')))
+    stream.on('error', reject)
+  })

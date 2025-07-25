@@ -14,7 +14,7 @@ let isDictionaryLoaded = false
 export const lambdaHandler = async (event: APIGatewayEvent, context: Context): Promise<APIGatewayProxyResult> => {
   try {
     if (!isDictionaryLoaded) {
-      await loadDictionaryFromS3('dialects', 'libyan_dictionary.csv')
+      await loadDictionaryFromS3('dialects', 'dictionary.jsonl')
       isDictionaryLoaded = true
     }
 
