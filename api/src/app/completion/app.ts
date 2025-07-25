@@ -2,8 +2,8 @@ import { APIGatewayEvent, APIGatewayProxyResult, Context } from 'aws-lambda'
 import { corsify, setError } from '../../lib/helpers/lambda'
 import OpenAI from 'openai'
 import dotenv from 'dotenv'
-import { loadDictionaryFromS3, dictionaryTerms } from './libyanDictionary'
-import { highlightTerms } from './preprocessing'
+import { loadDictionaryFromS3 } from './libyanDictionary'
+import { findDictionaryMatches } from './preprocessing'
 
 dotenv.config()
 
@@ -28,8 +28,10 @@ export const lambdaHandler = async (event: APIGatewayEvent, context: Context): P
       return setError('Missing required translation fields')
     }
 
-    const { preprocessed, matchFound } =
-      srcLangId === 'Libyan Arabic' ? highlightTerms(srcText) : { preprocessed: srcText, matchFound: false }
+    const { preprocessed, matchFound, matches } =
+      srcLangId === 'Libyan Arabic'
+        ? findDictionaryMatches(srcText)
+        : { preprocessed: srcText, matchFound: false, matches: [] }
 
 
     const messages = [
@@ -51,7 +53,7 @@ export const lambdaHandler = async (event: APIGatewayEvent, context: Context): P
 
     return corsify({
       statusCode: 200,
-      body: JSON.stringify({ translatedText, preprocessed, matchFound })
+      body: JSON.stringify({ translatedText, preprocessed, matchFound, matches })
     })
   } catch (error) {
     console.error('Translation error:', error)

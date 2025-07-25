@@ -1,4 +1,3 @@
-
 export interface DictionaryTerm {
   libTerm: string
   engTerm: string
@@ -11,8 +10,7 @@ export interface DictionaryTerm {
 export const highlight = (text: string): string => {
   if (!text) return ''
 
-  // Match anything inside parentheses that looks like a Libyan term replacement
-  // Example: "كلمة (word – context)"
+  // Match patterns like: "كلمة (word – context)"
   const regex = /(\b[\p{L}\p{N}]+)\s\(([^–]+)\s–\s([^)]+)\)/gu
 
   return text.replace(regex, (_, term, eng, context) => {
@@ -22,28 +20,18 @@ export const highlight = (text: string): string => {
 
 export const formatMatches = (matches: DictionaryTerm[]): string => {
   if (!matches || matches.length === 0) {
-    return 'No Libyan terms found.'
+    return '<p>No Libyan terms found.</p>'
   }
 
-  const grouped = matches.reduce<Record<string, { engTerm: string; context: string }[]>>((acc, { libTerm, engTerm, context }) => {
-    if (!acc[libTerm]) {
-      acc[libTerm] = []
-    }
-    // avoid duplicate entries under the same libTerm
-    if (!acc[libTerm].some(entry => entry.engTerm === engTerm && entry.context === context)) {
-      acc[libTerm].push({ engTerm, context })
-    }
-    return acc
-  }, {})
+  let html = '<b>Libyan term match found:</b><ul>'
 
-  const lines: string[] = ['Libyan term match found:']
-
-  for (const [libTerm, entries] of Object.entries(grouped)) {
-    lines.push(`- ${libTerm}:`)
-    for (const { engTerm, context } of entries) {
-      lines.push(`  • ${engTerm} – ${context}`)
-    }
+  for (const { libTerm, engTerm, context, gender, style, region } of matches) {
+    html += `<li>${libTerm}<ul>`
+    html += `<li>${engTerm} – ${context}</li>`
+    html += `<li><small><b>Gender:</b> ${gender || 'N/A'} | <b>Style:</b> ${style || 'N/A'} | <b>Region:</b> ${region || 'N/A'}</small></li>`
+    html += '</ul></li>'
   }
 
-  return lines.join('\n')
+  html += '</ul>'
+  return html
 }

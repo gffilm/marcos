@@ -1,25 +1,22 @@
 import { dictionaryTerms, DictionaryTerm } from './libyanDictionary'
 
-export const highlightTerms = (text: string): { preprocessed: string; matchFound: boolean } => {
-  console.log('📥 Starting Libyan term, Source text:', text)
+export const findDictionaryMatches = (
+  text: string
+): { preprocessed: string; matchFound: boolean; matches: DictionaryTerm[] } => {
+  console.log('📥 Starting Libyan term search, Source text:', text)
 
-  let modifiedText = text
-  let matched = false
+  const matches: DictionaryTerm[] = []
 
-  for (const { libTerm, engTerm, context } of dictionaryTerms) {
-    const pattern = new RegExp(`${escapeRegExp(libTerm)}`, 'gi')
-    if (pattern.test(modifiedText)) {
-      // console.log(`✅ Match found for term: "${libTerm}" → (${engTerm} – ${context})`)
-      const highlight = `${libTerm} (${engTerm} – ${context})`
-      modifiedText = modifiedText.replace(pattern, highlight)
-      matched = true
-    } else {
-      // console.log(`⛔ No match for term: "${libTerm}"`)
+  for (const term of dictionaryTerms) {
+    const pattern = new RegExp(`(?<!\\p{L})${escapeRegExp(term.libTerm)}(?!\\p{L})`, 'gu')
+    if (pattern.test(text)) {
+      matches.push(term)
     }
   }
 
-  console.log('📝 Preprocessed text:', modifiedText)
-  return { preprocessed: modifiedText, matchFound: matched }
+
+  console.log('📝 Matches found:', matches.length)
+  return { preprocessed: text, matchFound: matches.length > 0, matches }
 }
 
 const escapeRegExp = (string: string) =>

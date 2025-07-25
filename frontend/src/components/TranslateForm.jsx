@@ -2,15 +2,14 @@ import React, { useState } from 'react'
 import { TextField, Button, Grid, CircularProgress } from '@mui/material'
 import axios from 'axios'
 import LanguageSelect from './LanguageSelect'
-import { highlight } from './util'
+import { formatMatches } from './util'
 
 export default function TranslateForm() {
   const [srcText, setSrcText] = useState('Hello')
   const [srcLangId, setSrcLangId] = useState('English')
   const [tgtLangId, setTgtLangId] = useState('Spanish')
   const [translated, setTranslated] = useState('')
-  const [preprocessed, setPreprocessed] = useState('')
-  const [matchFound, setMatchFound] = useState(false)
+  const [matches, setMatches] = useState([])
 
   const [loading, setLoading] = useState(false)
   const BASE_URL = import.meta.env.VITE_LAMBDA_ENDPOINT ?? ''
@@ -23,10 +22,9 @@ export default function TranslateForm() {
         srcLangId,
         tgtLangId
       })
-      const { translatedText, preprocessed, matchFound } = res.data
+      const { translatedText, matches } = res.data
       setTranslated(translatedText)
-      setPreprocessed(preprocessed)
-      setMatchFound(matchFound)
+      setMatches(matches || [])
 
     } catch (err) {
       console.error('Translation failed:', err)
@@ -80,14 +78,12 @@ export default function TranslateForm() {
         </Button>
       </Grid>
 
-      {matchFound && (
+      {matches.length > 0 && (
         <Grid item xs={12}>
           <div style={{ background: '#fff9c4', padding: 12, borderRadius: 6 }}>
-            <strong>Libyan term match found:</strong>
             <div
-              dangerouslySetInnerHTML={{
-                __html: highlight(preprocessed).replace(/\n/g, '<br />')
-              }}
+              style={{ margin: 0, whiteSpace: 'pre-wrap' }}
+              dangerouslySetInnerHTML={{ __html: formatMatches(matches) }}
             />
           </div>
         </Grid>
