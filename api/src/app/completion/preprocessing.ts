@@ -8,17 +8,15 @@ export const findDictionaryMatches = (
   const matches: DictionaryTerm[] = []
 
   for (const term of dictionaryTerms) {
-    const pattern = new RegExp(`(?<!\\p{L})${escapeRegExp(term.libTerm)}(?!\\p{L})`, 'gu')
-    if (pattern.test(text)) {
+    const pattern = new RegExp(`(?<!\\p{L})(${escapeRegExp(term.libTerm)})(?!\\p{L})`, 'gu')
+    if (pattern.test(modifiedText)) {
       matches.push(term)
-      const highlight = `${term.libTerm} (${term.engTerm})`
-      modifiedText = modifiedText.replace(pattern, highlight)
+      modifiedText = modifiedText.replace(pattern, (match) => `${match} (${term.engTerm})`)
     }
   }
 
-
   console.log('📝 Matches found:', matches.length)
-  return { preprocessed: text, matchFound: matches.length > 0, matches }
+  return { preprocessed: modifiedText, matchFound: matches.length > 0, matches }
 }
 
 const escapeRegExp = (string: string) =>
